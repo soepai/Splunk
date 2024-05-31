@@ -1,0 +1,12 @@
+index=fortigate type=traffic subtype=forward action=accept 
+| where isnotnull(action) 
+```to get the setdelta byte and receiveddelta byte by each session id and src```
+| eventstats sum(rcvddelta) as totalrcvdbyte sum(sentdelta) as totalsentbyte by sessionid src 
+```byte to mega byte and giga byte```
+| eval Received_MB = (totalrcvdbyte/(1024*1024)) 
+| eval Sent_MB = (totalsentbyte/(1024*1024)) 
+| eval Received_GB = Received_MB/1024
+| eval Sent_GB = Sent_MB/1024
+| eval total = round(Received_GB + Sent_GB, 2)
+```time trend chart for viewing the total bytes by src, service such as RDP, SSH and src interface```
+| timechart sum(total) as Transferred_GB by src
