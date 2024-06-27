@@ -1,1 +1,22 @@
+[To monitor the auditd logs]
 
+To effectively monitor Linux Auditd events in Splunk, you can use the Splunk Add-on for Linux.
+
+This add-on allows you to collect and analyze audit logs from your Linux devices. Here’s how you can set it up:
+Configure AuditD to Send Data to the Splunk Add-on for Linux:
+
+https://docs.splunk.com/Documentation/AddOns/released/Linux/Configure4 
+https://splunkbase.splunk.com/app/833 
+
+This Add On for linux Auditd allows Administrators to make their data OCSF Compliant and CIM compliant for related Linux Auditd Events
+https://preview.splunkbase.splunk.com/app/7045 
+
+------------------------------------------------------------------------------------------------------------------------------------------
+[Fortigate]
+Fortinet FortiGate App for Splunk
+https://preview.splunkbase.splunk.com/app/2800
+
+Fortinet FortiGate Add-On for Splunk
+https://preview.splunkbase.splunk.com/app/2846
+
+------------------------------------------------------------------------------------------------------------------------------------------
