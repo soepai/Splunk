@@ -1,0 +1,17 @@
+##checking index volume per host##
+index="_internal" source="*metrics.log" group="per_host_thruput" series="YOUR_HOST" 
+| rename series AS host 
+| eval gb=round(kb/1024/1024,3) 
+| chart sum(gb) AS GB by host 
+| sort - sum(gb)
+
+ ##checking license usage and index volume per index##
+index=_internal source="*license_usage.log" type=usage type=Usage idx=YOUR_INDEX pool=* earliest=-7d@d latest=@d
+| eval GB = b
+| timechart limit=50 partial=false span=1d sum(eval(GB/1024/1024/1024)) by idx
+
+##checking index size##
+index=YOUR_INDEX
+| eval len=length(_raw)
+| timechart span=1d sum(len) as len_byte 
+| eval GB=round(len_byte/1024/1024/1024,2)
