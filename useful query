@@ -15,3 +15,13 @@ index=YOUR_INDEX
 | eval len=length(_raw)
 | timechart span=1d sum(len) as len_byte 
 | eval GB=round(len_byte/1024/1024/1024,2)
+
+##sankey diagram to show 4 different columns##
+index=tml_app_fortigate type=traffic subtype=local 
+|eval srcintf="srcintf_".srcintf |eval dstintf="dstintf_".dstintf
+|appendpipe [stats values by action srcintf |rename action as source, srcintf as target] 
+|appendpipe [stats values by srcintf service |rename srcintf as source, service as target] 
+|appendpipe [stats values by service dstintf |rename service as source, dstintf as target] 
+| search source=* target=*
+| stats count by source target
+| sort -action
