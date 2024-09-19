@@ -1,0 +1,10 @@
+| inputlookup Random_IPs_Information.csv | rename IP as ip, "Zone Information" as zone ```<= specific IP as ip```
+| append [| inputlookup Random_IPs_Information.csv | rename "IP_Subnet" as ip,  "Zone Information" as zone] ```<= subnet IP as ip```
+| append [| inputlookup NOC_Wifi_Static_IP.csv | rename IP as nocip "Zone Information" as zone Name as user] 
+| eval myIP="8.8.8.8" 
+| eval nodename=case(
+    myIP == ip, zone, ```<= specific IP```
+    myIP = nocip, user+" from "+zone, ```<= noc wifi specific ip```
+    cidrmatch(ip, myIP), ip+" => "+"("+zone+")" ```<= ip subnet IP```
+    ) 
+| stats count by nodename
