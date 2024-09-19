@@ -1,0 +1,12 @@
+#to check specific app log
+cat /app/splunk/var/log/splunk/ipgeolocation/splunk.log
+
+#to fix local proxy error in Splunk SH
+#add this command in splunk-launch.conf
+cat /opt/splunk/etc/splunk-launch.conf
+no_proxy=127.0.0.1,localhost
+
+#to add proxy setting in server.conf
+cat /opt/splunk/etc/system/local/server.conf
+[proxyConfig]
+http_proxy=http://Nativesys:Nativesys@10.10.10.10:3128/
