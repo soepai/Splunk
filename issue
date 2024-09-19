@@ -10,3 +10,5 @@ no_proxy=127.0.0.1,localhost
 cat /opt/splunk/etc/system/local/server.conf
 [proxyConfig]
 http_proxy=http://Nativesys:Nativesys@10.10.10.10:3128/
+https_proxu=http://Nativesys:Nativesys@10.10.10.10:3128/
+no_proxy=20.20.20.20
