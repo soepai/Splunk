@@ -1,0 +1,7 @@
+index=tml_app_fortigate type=traffic subtype=local action IN ("accept","deny","other") 
+|eval srcintf="srcintf_".srcintf |eval dstintf="dstintf_".dstintf
+|appendpipe [stats values by srcintf service |rename srcintf as source, service as target] 
+|appendpipe [stats values by service dstintf |rename service as source, dstintf as target] 
+|appendpipe [stats values by dstintf action |rename dstintf as source, action as target] 
+| search source=* target=*
+| stats count by source target
