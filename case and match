@@ -24,3 +24,5 @@ index=* (action=success OR tag=success)
 | where user IN (legit_user) ```whitelisting the legit_user``` 
 | where !match(user, "^(h\d[4,6]|hw\d{7}|_system_|SystemTimer)$") ```excluding the user with exact naming format by regex```
 | stats count(user) as total_count by user
+| eval user=user." count=".total_count
+| sort -count
