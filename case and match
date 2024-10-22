@@ -1,7 +1,8 @@
 [Conditional and comparison functions]
 --------------------------------------
 
-| eval router = case(match(_raw, /SSLVPN/i), "citrix", 
+| eval router = case(
+  match(_raw, /SSLVPN/i), "citrix", 
   match(_raw, /ASA-6/i), "cisco", 
   match(_raw, /OBSERVED/i), "bluecoat", 
   match(_raw, /pa-vm/i), "palo", 
@@ -10,7 +11,8 @@
 
 -------------------------------------
 
-| eval description=case(status == 200, "OK", 
+| eval description=case(
+  status == 200, "OK", 
   status ==404, "Not found", 
   status == 500, "Internal Server Error", 
   true(), "Other")
