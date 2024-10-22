@@ -1,6 +1,6 @@
 [Conditional and comparison functions]
 --------------------------------------
-
+index=* (action=success OR tag=success) 
 | eval router = case(
   match(_raw, /SSLVPN/i), "citrix", 
   match(_raw, /ASA-6/i), "cisco", 
@@ -8,7 +8,6 @@
   match(_raw, /pa-vm/i), "palo", 
   true(), "other")
 | into $destination
-
 -------------------------------------
 
 | eval description=case(
@@ -17,3 +16,11 @@
   status == 500, "Internal Server Error", 
   true(), "Other")
 | table status description
+-------------------------------------
+
+| eval legit_user=case(
+    user = "a0001", user+"(Apple User)",
+    user = "s0001", user+"(Samsung User)", 1=1 , user)
+| where user IN (legit_user) ```whitelisting the legit_user``` 
+| where !match(user, "^(h\d[4,6]|hw\d{7}|_system_|SystemTimer)$") ```excluding the user with exact naming format by regex```
+| stats count(user) as total_count by user
