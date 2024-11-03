@@ -1,0 +1,40 @@
+https://research.splunk.com/detections/
+
+[High Volume DDoS Detection on Destination IP]
+----------------------------------------------
+index=fortigate_fw type=traffic dest=10.10.10.10	 ```<=victim server ip```
+NOT (src="10.0.0.0/8" OR src="172.16.0.0/12" OR src="192.168.0.0/16")	 ```<=whitelisted src ip```
+| where isnotnull(action) 
+| bin _time span=1m 
+| stats values(src), dc(src) as unique_src, sum(sentdelta) as totalsentbyte by _time dest 
+| eval totalsentGB=round(totalsentbyte/1024/1024/1024,2) ```<=byte to gigabyte```
+| rename dest as Target_IP, values(src) as Bot_IPs, unique_src as Bot_IP_Count, totalsentbyte as Total_Sent_Byte, totalsentGB as Total_Sent_GB 
+| where Total_Sent_GB > 10 AND Bot_IP_Count > 50 
+| sort -Total_Sent_GB 
+
+
+[IOC IP Detection in CIM Network Traffic]
+-----------------------------------------
+| tstats values(All_Traffic.src_ip) as src, values(All_Traffic.dest_ip) as dest  ```<=retrieve all the src ip and dest ip```
+from datamodel=Network_Traffic where All_Traffic.action=* 	```<=from Splunk CIM Network Traffic datamodel```
+| eval IP_Addr=mvappend(src,dest) 				```<=append the src and dest ip to IP_Addr field```
+| stats count by IP_Addr						```<=summarize the unique ip address(both src and dest)```
+| join								```<=join inner the IP_Addr file with lookup file’s ioc_ip field```
+[ | inputlookup crowdstrike_ioc_ip.csv | rename ioc_ip as IP_Addr] 	```<=lookup threat intel ioc ip from crowdstrike```
+
+Behind this query, we need to configure the CIM Network traffic datamodel which indicates our network traffic indexes with network tag. Also there is a scheduled lookup file containing the IOC data such as ioc_ip, threat_actor, threat_type, etc.
+
+The lookup file runs by schedule.
+index=crowdstrike_intel 	type=ip_address 
+| table indicator actors{}, threat_types{} 
+| rename indicator as ioc_ip, actors{} as threat_actor, threat_types{} as threat_type 
+| dedup ioc_ip 
+| outputlookup crowdstrike_ioc_ip.csv
+
+
+[Suspicious Certutil Usage Detection]
+-------------------------------------
+index=* source="xmlwineventlog:Microsoft-Windows-Sysmon/Operational" EventID=1 
+| where (process_name="certutil.exe" AND (process_command_line="* -urlcache *" OR process_command_line="* -encode *" OR process_command_line="* -decode *"))
+| table _time, ComputerName, User, ParentImage, Image, process_command_line
+| sort - _time
