@@ -38,3 +38,6 @@ index=* source="xmlwineventlog:Microsoft-Windows-Sysmon/Operational" EventID=1
 | where (process_name="certutil.exe" AND (process_command_line="* -urlcache *" OR process_command_line="* -encode *" OR process_command_line="* -decode *"))
 | table _time, ComputerName, User, ParentImage, Image, process_command_line
 | sort - _time
+
+https://adamtheautomator.com/certutil/
+https://www.sentinelone.com/blog/malware-living-off-land-with-certutil/
