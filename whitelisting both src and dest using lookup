@@ -1,0 +1,6 @@
+index=corelight_sensor sourcetype=corelight_notice severity IN ("alert", "critical") 
+NOT [ | inputlookup whitelisted_cidr.csv 
+      | eval match=if(cidrmatch(lookup_src, index_src) AND lookup_dest==index_dest AND lookup_destport==index_destport, 1, 0) 
+      | where match=1 OR lookup_src=index_src 
+      | table lookup_src lookup_dest lookup_destport ] 
+| stats count by index_src index_dest index_destport 
